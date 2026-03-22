@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="akillisletme"
+        android:label="ESP32 Audio Bridge"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -30,12 +30,32 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Sistem sesini yakalayan foreground service -->
+        <service
+            android:name=".AudioCaptureService"
+            android:foregroundServiceType="mediaProjection"
+            android:exported="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <!-- UDP gönderimi -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Foreground service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Android 14+ mediaProjection foreground service tipi -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <!-- AudioPlaybackCaptureConfiguration için (API 29+) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Ses dosyası okuma — Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!-- Ses dosyası okuma — Android 12 ve altı -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

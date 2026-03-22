@@ -1,7 +1,8 @@
+import 'package:akillisletme/feature/audio_stream/audio_stream_view.dart';
 import 'package:akillisletme/feature/home/home_view.dart';
-import 'package:akillisletme/feature/settings/language_selection/language_selection_view.dart';
 import 'package:akillisletme/feature/login_process/onboarding/onboarding_view.dart';
 import 'package:akillisletme/feature/settings/about/about_view.dart';
+import 'package:akillisletme/feature/settings/language_selection/language_selection_view.dart';
 import 'package:akillisletme/feature/settings/settings_view.dart';
 import 'package:akillisletme/product/navigation/route_transitions.dart';
 import 'package:akillisletme/product/service/service_locator.dart';
@@ -13,6 +14,7 @@ part 'app_router.g.dart';
 @TypedGoRoute<HomeRoute>(
   path: '/',
   routes: [
+    TypedGoRoute<AudioStreamRoute>(path: 'audio-stream'),
     TypedGoRoute<SettingsRoute>(
       path: 'settings',
       routes: [
@@ -28,6 +30,18 @@ class HomeRoute extends GoRouteData with $HomeRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadeTransition(key: state.pageKey, child: const HomeView());
+  }
+}
+
+class AudioStreamRoute extends GoRouteData with $AudioStreamRoute {
+  const AudioStreamRoute();
+
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return slideRightTransition(
+      key: state.pageKey,
+      child: const AudioStreamView(),
+    );
   }
 }
 

@@ -14,7 +14,7 @@ class ContactUsTile extends StatelessWidget {
     return ListTile(
       leading: Icon(Icons.mail_outline_rounded, color: cs.onSurfaceVariant),
       title: Text(LocaleKeys.settings_contactUs.tr()),
-      onTap: () => locator.urlLauncher.sendEmail(to: AppString.contactEmail),
+      onTap: () => locator.urlLauncher.openInApp(AppString.websiteUrl),
     );
   }
 }

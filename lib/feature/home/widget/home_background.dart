@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:akillisletme/product/service/service_locator.dart';
 import 'package:flutter/material.dart';
 
-/// Arka plan animasyonu — yüzen "Flutter Starter Template" yazıları.
+/// Arka plan animasyonu — yüzen ses ikonu öğeleri.
 class HomeBackground extends StatefulWidget {
   const HomeBackground({super.key});
 
@@ -18,7 +18,16 @@ class HomeBackground extends StatefulWidget {
 class _HomeBackgroundState extends State<HomeBackground>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late List<_FloatingText> _items;
+  late List<_FloatingIcon> _items;
+
+  static const _iconSet = [
+    Icons.graphic_eq,
+    Icons.music_note,
+    Icons.headphones,
+    Icons.podcasts,
+    Icons.mic,
+    Icons.equalizer,
+  ];
 
   @override
   void initState() {
@@ -33,13 +42,13 @@ class _HomeBackgroundState extends State<HomeBackground>
 
     final rng = Random(42);
     _items = List.generate(12, (i) {
-      return _FloatingText(
-        x: rng.nextDouble() * 1.4 - 0.2,
-        y: rng.nextDouble(),
-        speed: 0.15 + rng.nextDouble() * 0.35,
-        opacity: 0.04 + rng.nextDouble() * 0.05,
-        fontSize: 14.0 + rng.nextDouble() * 10,
-        angle: 0,
+      return _FloatingIcon(
+        x:        rng.nextDouble() * 1.4 - 0.2,
+        y:        rng.nextDouble(),
+        speed:    0.15 + rng.nextDouble() * 0.35,
+        opacity:  0.04 + rng.nextDouble() * 0.05,
+        size:     28.0 + rng.nextDouble() * 24,
+        iconData: _iconSet[i % _iconSet.length],
       );
     });
   }
@@ -65,16 +74,16 @@ class _HomeBackgroundState extends State<HomeBackground>
     if (!HomeBackground.enabledNotifier.value) return const SizedBox.shrink();
 
     final size = MediaQuery.sizeOf(context);
-    final cs = Theme.of(context).colorScheme;
+    final cs   = Theme.of(context).colorScheme;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
         return CustomPaint(
           size: size,
-          painter: _TextBackgroundPainter(
+          painter: _IconBackgroundPainter(
             progress: _controller.value,
-            items: _items,
-            color: cs.primary,
+            items:    _items,
+            color:    cs.primary,
           ),
         );
       },
@@ -82,35 +91,38 @@ class _HomeBackgroundState extends State<HomeBackground>
   }
 }
 
-class _FloatingText {
-  const _FloatingText({
+// ── Veri modeli ───────────────────────────────────────────────────────────────
+
+class _FloatingIcon {
+  const _FloatingIcon({
     required this.x,
     required this.y,
     required this.speed,
     required this.opacity,
-    required this.fontSize,
-    required this.angle,
+    required this.size,
+    required this.iconData,
   });
-  final double x;
-  final double y;
-  final double speed;
-  final double opacity;
-  final double fontSize;
-  final double angle;
+
+  final double   x;
+  final double   y;
+  final double   speed;
+  final double   opacity;
+  final double   size;
+  final IconData iconData;
 }
 
-class _TextBackgroundPainter extends CustomPainter {
-  _TextBackgroundPainter({
+// ── Painter ───────────────────────────────────────────────────────────────────
+
+class _IconBackgroundPainter extends CustomPainter {
+  _IconBackgroundPainter({
     required this.progress,
     required this.items,
     required this.color,
   });
 
-  static const String _text = 'Flutter Starter Template';
-
-  final double progress;
-  final List<_FloatingText> items;
-  final Color color;
+  final double            progress;
+  final List<_FloatingIcon> items;
+  final Color             color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -121,26 +133,26 @@ class _TextBackgroundPainter extends CustomPainter {
 
       canvas
         ..save()
-        ..translate(cx, cy)
-        ..rotate(item.angle);
-
-      final textStyle = TextStyle(
-        color: color.withValues(alpha: item.opacity),
-        fontSize: item.fontSize,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 1.5,
-      );
+        ..translate(cx, cy);
 
       final tp = TextPainter(
-        text: TextSpan(text: _text, style: textStyle),
+        text: TextSpan(
+          text: String.fromCharCode(item.iconData.codePoint),
+          style: TextStyle(
+            fontFamily: item.iconData.fontFamily,
+            package:    item.iconData.fontPackage,
+            fontSize:   item.size,
+            color:      color.withValues(alpha: item.opacity),
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
+
       tp.paint(canvas, Offset(-tp.width / 2, -tp.height / 2));
       canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(_TextBackgroundPainter oldDelegate) =>
-      progress != oldDelegate.progress;
+  bool shouldRepaint(_IconBackgroundPainter old) => progress != old.progress;
 }

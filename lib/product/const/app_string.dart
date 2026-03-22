@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 final class AppString {
   const AppString._();
 
+  // ── Web sitesi ────────────────────────────────────────────
+  static const String websiteUrl = 'https://akillisletme.com/en';
+
   // ── Store URL'leri (çeviriye tabi değil) ───────────────────
   static const String appStoreUrl =
       'https://apps.apple.com/app/instagram/id389801252';

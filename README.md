@@ -1,63 +1,104 @@
-# Flutter Starter Template
+# ESP32 Audio Bridge
 
-A ready-to-use Flutter boilerplate for starting new projects without setting up architecture from scratch. Clone, configure, and start building features immediately.
+Stream Android system audio or WAV files to an ESP32 over UDP — in real time.
+
+The app captures audio via Android's **MediaProjection API** (system audio) or reads a local **.wav file**, then sends raw **PCM16** packets over **UDP** to your ESP32. Live stats and a timestamped log are displayed on screen while streaming.
+
+---
 
 ## Screenshots
 
 <p align="center">
-  <img src="app_image/onboarding.png" width="180" />
-  <img src="app_image/step5.png" width="180" />
-  <img src="app_image/home_0.png" width="180" />
-  <img src="app_image/home_1.png" width="180" />
-  <img src="app_image/settings.png" width="180" />
-  <img src="app_image/about.png" width="180" />
+  <img src="app_image/01_language_select.png" width="160" />
+  <img src="app_image/02_onboarding_welcome.png" width="160" />
+  <img src="app_image/03_onboarding_theme.png" width="160" />
+  <img src="app_image/04_onboarding_esp32.png" width="160" />
+  <img src="app_image/05_onboarding_ready.png" width="160" />
 </p>
+
+<p align="center">
+  <img src="app_image/06_home.png" width="160" />
+  <img src="app_image/07_settings.png" width="160" />
+  <img src="app_image/08_stream_settings.png" width="160" />
+  <img src="app_image/09_stream_log.png" width="160" />
+</p>
+
+---
+
+## How It Works
+
+1. Power on your ESP32 and connect your phone to its Wi-Fi network (`ESP32_Audio`)
+2. Open the app and choose an audio source — **System Audio** or **WAV File**
+3. Verify the IP address (`192.168.4.1`) and port (`4210`)
+4. Tap **Start Stream** — audio data is sent as PCM16 over UDP
+
+The ESP32 receives packets on its UDP socket and feeds them to a DAC or I2S audio output. If your ESP32 firmware uses a `wav_decoder`, enable the **Add WAV Header** toggle so each packet includes a 44-byte WAV header.
+
+---
+
+## Features
+
+- **System Audio streaming** via Android MediaProjection (Android 10+ required)
+- **WAV file streaming** — pick any `.wav` file and stream at native playback speed, with optional loop
+- Configurable **sample rate**, **buffer size**, **channel** (mono/stereo), and **WAV header** toggle
+- **Network settings** — change ESP32 IP and port at runtime
+- Live **stats panel**: KB/s, Packets/s, Total Packets, Total KB
+- Timestamped **log panel** with copy and share buttons
+- 14-language support (TR, EN, DE, AR, ES, FR, HI, ID, IT, JA, KO, PT, RU, ZH)
+- Multiple color themes + system/light/dark mode
+
+---
+
+## Requirements
+
+| Requirement | Detail |
+|---|---|
+| Android | 10 (API 29) or higher |
+| Permission | MediaProjection (system audio only) |
+| Network | Phone connected to ESP32's Wi-Fi AP |
+
+---
+
+## Default Connection
+
+| Setting | Value |
+|---|---|
+| Wi-Fi Network | `ESP32_Audio` |
+| ESP32 IP | `192.168.4.1` |
+| UDP Port | `4210` |
+
+These are the ESP32 AP-mode defaults. Both IP and port can be changed in the app's Network Settings screen.
+
+---
 
 ## Tech Stack
 
 | Category | Package |
 |---|---|
 | State Management | flutter_bloc, freezed |
-| DI | get_it |
+| Dependency Injection | get_it |
 | Routing | go_router, go_router_builder |
-| Cache | hive_ce, shared_preferences |
 | Localization | easy_localization |
-| Code Generation | build_runner, flutter_gen_runner, freezed, json_serializable |
-| UI | flutter_svg, lottie, shimmer, smooth_page_indicator |
+| Cache | hive_ce, shared_preferences |
+| Audio (system) | Android MediaProjection (platform channel) |
+| Audio (file) | WAV file streamer (Dart) |
+| Networking | UDP socket (dart:io) |
+| Sharing | share_plus |
+| Code Generation | build_runner, freezed, json_serializable, flutter_gen_runner |
 
-## Getting Started
-
-After cloning, see **[`doc/project.md`](doc/project.md)** — the main project guide. It covers everything you need to get started.
-
-If this is a fresh clone, follow **[`doc/new_feature/setup_after_clone.md`](doc/new_feature/setup_after_clone.md)** first to clean generated files, install dependencies, and run code generation.
+---
 
 ## Documentation
 
-The `doc/` directory is the built-in knowledge base for this project. Instead of memorizing conventions, read the relevant file.
+| File | Content |
+|---|---|
+| [`doc/esp32_audio_bridge.md`](doc/esp32_audio_bridge.md) | Full technical reference — architecture, audio pipeline, cubit, services |
+| [`doc/localization.md`](doc/localization.md) | Adding/updating translations, generator command |
+| [`doc/project.md`](doc/project.md) | Project architecture overview |
+| [`doc/new_feature/setup_after_clone.md`](doc/new_feature/setup_after_clone.md) | Post-clone setup steps |
 
-| File | What it covers |
-|------|----------------|
-| [`project.md`](doc/project.md) | Project overview, architecture, all 14 built-in systems |
-| [`new_feature/setup_after_clone.md`](doc/new_feature/setup_after_clone.md) | Post-clone setup steps (with Firebase opt-in) |
-| [`new_feature/README.md`](doc/new_feature/README.md) | New feature checklist + task-based navigation table |
-| [`new_feature/folder_structure.md`](doc/new_feature/folder_structure.md) | Feature folder conventions |
-| [`new_feature/state_management.md`](doc/new_feature/state_management.md) | Cubit + Freezed patterns |
-| [`new_feature/view_rules.md`](doc/new_feature/view_rules.md) | StatelessWidget vs StatefulWidget + ViewModel |
-| [`new_feature/model_rules.md`](doc/new_feature/model_rules.md) | Freezed models vs Hive models |
-| [`new_feature/service_rules.md`](doc/new_feature/service_rules.md) | Shared vs module-specific services |
-| [`new_feature/service_initialization.md`](doc/new_feature/service_initialization.md) | GetIt locator registration + init flow |
-| [`new_feature/data_storage.md`](doc/new_feature/data_storage.md) | SharedCache vs ProductCache decision tree |
-| [`new_feature/route_and_strings.md`](doc/new_feature/route_and_strings.md) | TypedGoRoute + EasyLocalization strings |
-| [`new_feature/widget_and_theme.md`](doc/new_feature/widget_and_theme.md) | Widget placement, TextTheme, AppPaddings, AppMessenger |
-| [`new_feature/assets_and_flutter_gen.md`](doc/new_feature/assets_and_flutter_gen.md) | FlutterGen type-safe asset access |
-| [`new_feature/enums_and_constants.md`](doc/new_feature/enums_and_constants.md) | Enum and constant placement |
-| [`new_feature/settings_and_urls.md`](doc/new_feature/settings_and_urls.md) | Store URLs, contact info, legal links |
-| [`new_feature/firebase_commented_out.md`](doc/new_feature/firebase_commented_out.md) | Firebase activation guide |
-
-## Credits
-
-Some architectural patterns and utilities were referenced from [hatayi-yasat](https://github.com/VB-CORE/hatayi_yasat), a production Flutter project.
+---
 
 ## License
 
-Feel free to use this template for your own projects.
+MIT — free to use and modify.

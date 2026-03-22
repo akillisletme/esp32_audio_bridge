@@ -1,5 +1,5 @@
 name: akillisletme
-description: "A new Flutter project."
+description: "ESP32 Audio Bridge — Android sistem sesini MediaProjection ile yakalar, UDP üzerinden ESP32'ye PCM16 formatında akıtır."
 publish_to: 'none' 
 version: 1.0.3+4
 
@@ -42,6 +42,9 @@ dependencies:
 
   # Permission
   permission_handler: ^11.3.1
+
+  # File picking (ses dosyası seçimi)
+  file_picker: ^8.3.7
 
   # Utility
   audioplayers: ^6.5.1
